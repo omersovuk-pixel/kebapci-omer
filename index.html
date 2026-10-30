@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#173d2d"><title>Kebapçı Ömer Yönetim</title>
+<style>
+:root{--green:#173d2d;--green2:#245b42;--bg:#f4f6f4;--card:#fff;--muted:#68756d;--line:#e2e8e3;--red:#b42318}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);font:15px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#17231b}
+header{background:var(--green);color:#fff;padding:22px 18px 18px;position:sticky;top:0;z-index:5}header h1{font-size:19px;margin:0 0 4px;letter-spacing:.3px}header small{color:#c5d8cc}
+nav{display:flex;overflow:auto;gap:7px;padding:10px;background:#fff;border-bottom:1px solid var(--line);position:sticky;top:75px;z-index:4}
+nav button{white-space:nowrap;border:1px solid var(--line);background:#fff;border-radius:20px;padding:9px 13px;color:#34443a}nav button.active{background:var(--green);color:#fff;border-color:var(--green)}
+main{max-width:760px;margin:auto;padding:15px 13px 90px}.page{display:none}.page.active{display:block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:15px;padding:15px;margin:0 0 12px;box-shadow:0 2px 8px #102b1710}
+h2{font-size:18px;margin:4px 0 13px}h3{font-size:15px;margin:0 0 9px}.muted{color:var(--muted);font-size:12px}.big{font-size:27px;font-weight:750;color:var(--green);margin:5px 0}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.metric{background:#f0f5f1;border-radius:12px;padding:12px}.metric b{display:block;font-size:18px;margin-top:5px}
+label{display:block;font-size:13px;font-weight:600;margin:10px 0 5px}input,select,textarea{width:100%;padding:12px;border:1px solid #d5ded7;border-radius:10px;background:#fff;font:inherit;color:#17231b}textarea{min-height:70px}
+.row{display:flex;gap:9px}.row>*{flex:1;min-width:0}.btn{border:0;border-radius:10px;padding:12px 14px;background:var(--green);color:#fff;font-weight:650;font:inherit;cursor:pointer}.btn.secondary{background:#e9f0eb;color:var(--green)}.btn.danger{background:#fff0ef;color:var(--red)}.btn.full{width:100%;margin-top:12px}
+table{width:100%;border-collapse:collapse;font-size:13px}td,th{text-align:left;padding:9px 5px;border-bottom:1px solid var(--line)}th{color:var(--muted);font-weight:600}
+.item{display:flex;justify-content:space-between;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}.item:last-child{border:0}.pill{font-size:11px;padding:4px 8px;border-radius:20px;background:#edf4ef;color:var(--green)}
+.notice{background:#fff8e7;border:1px solid #f1dfad;padding:11px;border-radius:10px;font-size:12px;color:#6d5414;line-height:1.45}
+.empty{color:var(--muted);font-size:13px;padding:12px 0}
+footer{position:fixed;bottom:0;background:#fff;border-top:1px solid var(--line);width:100%;padding:9px 14px calc(9px + env(safe-area-inset-bottom));font-size:11px;color:var(--muted);text-align:center}
+@media(min-width:600px){main{padding-top:22px}.grid.three{grid-template-columns:repeat(3,1fr)}}
+</style></head>
+<body>
+<header><h1>KEBAPÇI ÖMER RESTAURANT</h1><small>İşletme yönetim paneli · İlk sürüm prototipi</small></header>
+<nav id="nav">
+<button class="active" data-page="home">Özet</button><button data-page="sales">Ciro girişi</button><button data-page="expense">Gider</button><button data-page="debts">Borçlar</button><button data-page="suppliers">Toptancılar</button><button data-page="staff">Personel</button><button data-page="reports">Raporlar</button>
+</nav>
+<main>
+<section id="home" class="page active">
+<div class="card"><div class="muted" id="today"></div><div class="muted">Bugünkü toplam satış cirosu</div><div class="big" id="todayTotal">₺0</div><div class="grid three">
+<div class="metric"><span class="muted">Restoran</span><b id="homeRest">₺0</b></div><div class="metric"><span class="muted">Trendyol</span><b id="homeTrend">₺0</b></div><div class="metric"><span class="muted">Yemeksepeti</span><b id="homeYemek">₺0</b></div>
+</div></div>
+<div class="grid">
+<div class="card"><span class="muted">Bugünkü gider</span><div class="big" id="todayExpense">₺0</div></div>
+<div class="card"><span class="muted">Gider sonrası kalan</span><div class="big" id="todayNet">₺0</div></div>
+<div class="card"><span class="muted">Toplam kayıtlı borç</span><div class="big" id="debtTotal">₺0</div></div>
+<div class="card"><span class="muted">Toptancı bakiyesi</span><div class="big" id="supplierTotal">₺0</div></div>
+</div>
+<div class="card"><h3>Yaklaşan / gecikmiş vadeler</h3><div id="dueList" class="empty">Henüz vade kaydı yok.</div></div>
+<div class="notice">Bu prototip verileri yalnızca açıldığı tarayıcıda saklar. Personel ve işletme sahibinin aynı verileri görmesi, güvenli giriş ve çevrim içi yedekleme için sunucu/veritabanı kurulumu gerekir.</div>
+</section>
+
+<section id="sales" class="page">
+<div class="card"><h2>Günlük ciro girişi</h2>
+<label>Tarih</label><input type="date" id="saleDate">
+<label>Satış kanalı</label><select id="saleChannel"><option value="Restoran">Restoran / Sistem cirosu</option><option value="Trendyol">Trendyol</option><option value="Yemeksepeti">Yemeksepeti</option></select>
+<div id="restaurantPayments"><div class="row"><div><label>Nakit</label><input type="number" id="cash" min="0" step=".01" placeholder="0"></div><div><label>Kredi kartı</label><input type="number" id="card" min="0" step=".01" placeholder="0"></div></div>
+<div class="row"><div><label>Havale / EFT</label><input type="number" id="transfer" min="0" step=".01" placeholder="0"></div><div><label>Veresiye</label><input type="number" id="credit" min="0" step=".01" placeholder="0"></div></div></div>
+<div id="platformPayment" style="display:none"><label>Platform toplam sipariş cirosu</label><input type="number" id="platformAmount" min="0" step=".01" placeholder="0"><label>Platform komisyon / kesinti (isteğe bağlı)</label><input type="number" id="commission" min="0" step=".01" placeholder="0"></div>
+<label>Açıklama</label><input id="saleNote" placeholder="Örn. akşam vardiyası">
+<button class="btn full" id="saveSale">Ciroyu kaydet</button></div>
+<div class="card"><h3>Seçilen tarihin ciro özeti</h3><div id="saleSummary"></div></div>
+<div class="card"><h3>Son ciro kayıtları</h3><div id="saleList"></div></div>
+</section>
+
+<section id="expense" class="page"><div class="card"><h2>Gider kaydı</h2><label>Tarih</label><input type="date" id="expenseDate"><label>Gider kategorisi</label><select id="expenseCategory"><option>Malzeme / mutfak</option><option>Kira</option><option>Elektrik / su / doğalgaz</option><option>Maaş</option><option>Platform komisyonu</option><option>Vergi / SGK</option><option>Bakım / onarım</option><option>Diğer</option></select><label>Tutar (₺)</label><input type="number" id="expenseAmount" min="0" step=".01"><label>Ödeme şekli</label><select id="expensePay"><option>Nakit</option><option>Banka</option><option>Kredi kartı</option><option>Veresiye / borç</option></select><label>Açıklama</label><input id="expenseNote" placeholder="Gider açıklaması"><button class="btn full" id="saveExpense">Gideri kaydet</button></div><div class="card"><h3>Gider geçmişi</h3><div id="expenseList"></div></div></section>
+
+<section id="debts" class="page"><div class="card"><h2>Borç ekle</h2><label>Borç türü</label><select id="debtType"><option>Vergi borcu</option><option>SGK borcu</option><option>Banka kredisi</option><option>Şahsi borç</option><option>İşletme borcu</option></select><label>Kurum / kişi / açıklama</label><input id="debtName" placeholder="Örn. Vergi dairesi"><div class="row"><div><label>Toplam borç (₺)</label><input id="debtAmount" type="number" min="0" step=".01"></div><div><label>Vade tarihi</label><input id="debtDue" type="date"></div></div><label>Not</label><input id="debtNote"><button class="btn full" id="saveDebt">Borcu kaydet</button></div><div class="card"><h3>Borçlar ve ödeme kaydı</h3><div id="debtList"></div></div></section>
+
+<section id="suppliers" class="page"><div class="card"><h2>Toptancı ekle</h2><label>Toptancı adı</label><input id="supplierName" placeholder="Örn. Kasap Mehmet"><label>Ürün grubu</label><input id="supplierGroup" placeholder="Et, tavuk, içecek..."><button class="btn full" id="saveSupplier">Toptancı ekle</button></div><div class="card"><h3>Toptancı hareketi ekle</h3><label>Toptancı</label><select id="supplierSelect"></select><div class="row"><div><label>İşlem</label><select id="supplierAction"><option value="purchase">Alış / borç ekle</option><option value="payment">Ödeme yap</option></select></div><div><label>Tutar (₺)</label><input id="supplierAmount" type="number" min="0" step=".01"></div></div><label>Vade (alış için)</label><input id="supplierDue" type="date"><label>Açıklama</label><input id="supplierNote"><button class="btn full" id="saveSupplierMove">Hareketi kaydet</button></div><div class="card"><h3>Toptancı cari hesapları</h3><div id="supplierList"></div></div></section>
+
+<section id="staff" class="page"><div class="card"><h2>Personel maaş / avans</h2><label>Personel adı</label><input id="staffName" placeholder="Ad soyad"><button class="btn full" id="addStaff">Personel ekle</button><label>Personel</label><select id="staffSelect"></select><div class="row"><div><label>İşlem</label><select id="staffAction"><option value="salary">Maaş ödemesi</option><option value="advance">Avans</option></select></div><div><label>Tutar (₺)</label><input id="staffAmount" type="number" min="0" step=".01"></div></div><label>Açıklama</label><input id="staffNote"><button class="btn full" id="saveStaffMove">İşlemi kaydet</button></div><div class="card"><h3>Personel hareketleri</h3><div id="staffList"></div></div></section>
+
+<section id="reports" class="page"><div class="card"><h2>Raporlar</h2><label>Başlangıç</label><input type="date" id="reportStart"><label>Bitiş</label><input type="date" id="reportEnd"><button class="btn full" id="runReport">Raporu göster</button><div id="reportResult" style="margin-top:14px"></div></div><div class="card"><h3>Veri yedeği</h3><button class="btn secondary full" id="exportData">JSON yedeğini indir</button><label>Yedek dosyasını geri yükle</label><input type="file" id="importFile" accept=".json,application/json"></div></section>
+</main><footer>Ön sürüm · Veriler bu tarayıcıda saklanır · Gerçek muhasebe kaydı yerine geçmez</footer>
+<script>
+const $=id=>document.getElementById(id), money=n=>new Intl.NumberFormat('tr-TR',{style:'currency',currency:'TRY',maximumFractionDigits:2}).format(Number(n)||0), today=()=>new Date().toISOString().slice(0,10);
+let db=JSON.parse(localStorage.getItem('ko_db_v1')||'{"sales":[],"expenses":[],"debts":[],"suppliers":[],"supplierMoves":[],"staff":[],"staffMoves":[]}');
+function save(){localStorage.setItem('ko_db_v1',JSON.stringify(db));render()}
+function val(id){return Number($(id).value)||0}
+function sum(a){return a.reduce((s,x)=>s+(Number(x.amount)||0),0)}
+function channelTotal(date,ch){return sum(db.sales.filter(x=>x.date===date&&x.channel===ch))}
+function dayExpenses(date){return sum(db.expenses.filter(x=>x.date===date))}
+function nav(page){document.querySelectorAll('.page').forEach(x=>x.classList.toggle('active',x.id===page));document.querySelectorAll('nav button').forEach(x=>x.classList.toggle('active',x.dataset.page===page))}
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>nav(b.dataset.page));
+$('today').textContent=new Date().toLocaleDateString('tr-TR',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+['saleDate','expenseDate'].forEach(id=>$(id).value=today());$('reportStart').value=today().slice(0,8)+'01';$('reportEnd').value=today();
+$('saleChannel').onchange=()=>{let r=$('saleChannel').value==='Restoran';$('restaurantPayments').style.display=r?'block':'none';$('platformPayment').style.display=r?'none':'block'};
+$('saveSale').onclick=()=>{let ch=$('saleChannel').value,date=$('saleDate').value;if(!date)return alert('Tarih seçin.');let amount=ch==='Restoran'?val('cash')+val('card')+val('transfer')+val('credit'):val('platformAmount');if(amount<=0)return alert('Sıfırdan büyük tutar girin.');db.sales.push({id:Date.now(),date,channel:ch,amount,cash:ch==='Restoran'?val('cash'):0,card:ch==='Restoran'?val('card'):0,transfer:ch==='Restoran'?val('transfer'):0,credit:ch==='Restoran'?val('credit'):0,commission:val('commission'),note:$('saleNote').value});['cash','card','transfer','credit','platformAmount','commission','saleNote'].forEach(x=>$(x).value='');save();alert('Ciro kaydedildi.')};
+$('saveExpense').onclick=()=>{if(val('expenseAmount')<=0)return alert('Tutar girin.');db.expenses.push({id:Date.now(),date:$('expenseDate').value,category:$('expenseCategory').value,amount:val('expenseAmount'),pay:$('expensePay').value,note:$('expenseNote').value});$('expenseAmount').value='';$('expenseNote').value='';save();alert('Gider kaydedildi.')};
+$('saveDebt').onclick=()=>{if(!$('debtName').value.trim()||val('debtAmount')<=0)return alert('Kurum/kişi ve tutar girin.');db.debts.push({id:Date.now(),type:$('debtType').value,name:$('debtName').value,amount:val('debtAmount'),paid:0,due:$('debtDue').value,note:$('debtNote').value});['debtName','debtAmount','debtDue','debtNote'].forEach(x=>$(x).value='');save()};
+$('saveSupplier').onclick=()=>{if(!$('supplierName').value.trim())return alert('Toptancı adı girin.');db.suppliers.push({id:Date.now(),name:$('supplierName').value,group:$('supplierGroup').value});$('supplierName').value='';$('supplierGroup').value='';save()};
+$('saveSupplierMove').onclick=()=>{let s=db.suppliers.find(x=>x.id==$('supplierSelect').value);if(!s||val('supplierAmount')<=0)return alert('Toptancı ve tutar girin.');db.supplierMoves.push({id:Date.now(),supplierId:s.id,action:$('supplierAction').value,amount:val('supplierAmount'),due:$('supplierDue').value,note:$('supplierNote').value,date:today()});$('supplierAmount').value='';$('supplierDue').value='';$('supplierNote').value='';save()};
+$('addStaff').onclick=()=>{if(!$('staffName').value.trim())return;db.staff.push({id:Date.now(),name:$('staffName').value});$('staffName').value='';save()};
+$('saveStaffMove').onclick=()=>{let s=db.staff.find(x=>x.id==$('staffSelect').value);if(!s||val('staffAmount')<=0)return alert('Personel ve tutar girin.');db.staffMoves.push({id:Date.now(),staffId:s.id,action:$('staffAction').value,amount:val('staffAmount'),note:$('staffNote').value,date:today()});$('staffAmount').value='';$('staffNote').value='';save()};
+function render(){
+let d=today(),r=channelTotal(d,'Restoran'),t=channelTotal(d,'Trendyol'),y=channelTotal(d,'Yemeksepeti'),tot=r+t+y,ex=dayExpenses(d);
+$('todayTotal').textContent=money(tot);$('homeRest').textContent=money(r);$('homeTrend').textContent=money(t);$('homeYemek').textContent=money(y);$('todayExpense').textContent=money(ex);$('todayNet').textContent=money(tot-ex);
+$('debtTotal').textContent=money(sum(db.debts.map(x=>({amount:x.amount-x.paid})))+sum(db.supplierMoves.filter(x=>x.action==='purchase').map(x=>({amount:x.amount})))-sum(db.supplierMoves.filter(x=>x.action==='payment').map(x=>({amount:x.amount}))));
+$('supplierTotal').textContent=money(db.suppliers.reduce((a,s)=>a+supplierBalance(s.id),0));
+let due=[];db.debts.filter(x=>x.amount>x.paid&&x.due).forEach(x=>due.push({name:x.name,due:x.due,bal:x.amount-x.paid}));db.supplierMoves.filter(x=>x.action==='purchase'&&x.due).forEach(x=>due.push({name:db.suppliers.find(s=>s.id===x.supplierId)?.name||'Toptancı',due:x.due,bal:x.amount}));due=due.filter(x=>x.due<=new Date(Date.now()+7*86400000).toISOString().slice(0,10)).sort((a,b)=>a.due.localeCompare(b.due));$('dueList').innerHTML=due.length?due.map(x=>`<div class="item"><span>${x.name}<br><small class="muted">${x.due}</small></span><b>${money(x.bal)}</b></div>`).join(''):'Yaklaşan 7 gün içinde vade yok.';
+let sd=$('saleDate').value||d;$('saleSummary').innerHTML=['Restoran','Trendyol','Yemeksepeti'].map(ch=>`<div class="item"><span>${ch}</span><b>${money(channelTotal(sd,ch))}</b></div>`).join('')+`<div class="item"><b>Toplam</b><b>${money(channelTotal(sd,'Restoran')+channelTotal(sd,'Trendyol')+channelTotal(sd,'Yemeksepeti'))}</b></div>`;
+$('saleList').innerHTML=recent(db.sales,x=>`${x.channel} · ${x.date}`,x=>money(x.amount));
+$('expenseList').innerHTML=recent(db.expenses,x=>`${x.category} · ${x.date}`,x=>money(x.amount));
+$('debtList').innerHTML=db.debts.length?db.debts.map(x=>`<div class="item"><div><b>${x.name}</b><br><small class="muted">${x.type} ${x.due?'· Vade '+x.due:''}</small><br><small>Kalan: ${money(x.amount-x.paid)}</small></div><button class="btn secondary" onclick="payDebt(${x.id})">Ödeme</button></div>`).join(''):'<div class="empty">Henüz borç yok.</div>';
+$('supplierSelect').innerHTML=db.suppliers.map(x=>`<option value="${x.id}">${x.name}</option>`).join('')||'<option value="">Önce toptancı ekleyin</option>';
+$('supplierList').innerHTML=db.suppliers.length?db.suppliers.map(s=>`<div class="item"><div><b>${s.name}</b><br><small class="muted">${s.group||'Tedarikçi'} · ${db.supplierMoves.filter(m=>m.supplierId===s.id).length} hareket</small></div><b>${money(supplierBalance(s.id))}</b></div>`).join(''):'<div class="empty">Henüz toptancı yok.</div>';
+$('staffSelect').innerHTML=db.staff.map(x=>`<option value="${x.id}">${x.name}</option>`).join('')||'<option value="">Önce personel ekleyin</option>';
+$('staffList').innerHTML=recent(db.staffMoves,x=>`${db.staff.find(s=>s.id===x.staffId)?.name||'Personel'} · ${x.action==='advance'?'Avans':'Maaş'} · ${x.date}`,x=>money(x.amount));
+}
+function recent(arr,label,amount){return arr.length?arr.slice(-8).reverse().map(x=>`<div class="item"><span>${label(x)}<br><small class="muted">${x.note||''}</small></span><b>${amount(x)}</b></div>`).join(''):'<div class="empty">Henüz kayıt yok.</div>'}
+function supplierBalance(id){return db.supplierMoves.filter(x=>x.supplierId===id).reduce((a,x)=>a+(x.action==='purchase'?x.amount:-x.amount),0)}
+window.payDebt=id=>{let x=db.debts.find(x=>x.id===id),v=Number(prompt('Ödeme tutarı (kalan '+money(x.amount-x.paid)+')'));if(v>0&&v<=x.amount-x.paid){x.paid+=v;save()}};
+$('runReport').onclick=()=>{let a=$('reportStart').value,b=$('reportEnd').value,s=db.sales.filter(x=>x.date>=a&&x.date<=b),e=db.expenses.filter(x=>x.date>=a&&x.date<=b),by=ch=>sum(s.filter(x=>x.channel===ch));$('reportResult').innerHTML=`<div class="metric">Toplam ciro<b>${money(sum(s))}</b></div><p>Restoran: <b>${money(by('Restoran'))}</b></p><p>Trendyol: <b>${money(by('Trendyol'))}</b></p><p>Yemeksepeti: <b>${money(by('Yemeksepeti'))}</b></p><p>Gider: <b>${money(sum(e))}</b></p><p>Gider sonrası kalan: <b>${money(sum(s)-sum(e))}</b></p>`};
+$('exportData').onclick=()=>{let blob=new Blob([JSON.stringify(db,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='kebapci-omer-yedek-'+today()+'.json';a.click();URL.revokeObjectURL(a.href)};
+$('importFile').onchange=async e=>{let f=e.target.files[0];if(!f)return;try{let x=JSON.parse(await f.text());if(!x.sales||!x.expenses)throw 0;if(confirm('Mevcut kayıtların yerine yedek yüklensin mi?')){db=x;save();alert('Yedek yüklendi.')}}catch{alert('Geçerli yedek dosyası değil.')}};
+$('saleDate').onchange=render;render();
+</script></body></html>
